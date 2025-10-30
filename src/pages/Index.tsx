@@ -6,11 +6,15 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
+  const { toast } = useToast();
   const [chatOpen, setChatOpen] = useState(false);
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'ai'; text: string }>>([]);
   const [inputMessage, setInputMessage] = useState('');
+  const [formData, setFormData] = useState({ name: '', email: '', company: '', message: '' });
 
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -333,17 +337,53 @@ const Index = () => {
                 </div>
 
                 <div>
-                  <h3 className="text-2xl font-bold mb-6">Быстрая консультация</h3>
-                  <Button 
-                    onClick={() => setChatOpen(true)} 
-                    className="w-full h-48 bg-gradient-to-br from-primary via-secondary to-accent hover:opacity-90 text-white text-xl"
-                  >
-                    <div className="text-center">
-                      <Icon name="MessageSquare" className="mx-auto mb-4" size={48} />
-                      <div>Начать AI консультацию</div>
-                      <div className="text-sm opacity-80 mt-2">Получите оценку за 2 минуты</div>
-                    </div>
-                  </Button>
+                  <h3 className="text-2xl font-bold mb-6">Оставьте заявку</h3>
+                  <form onSubmit={(e) => {
+                    e.preventDefault();
+                    toast({
+                      title: "Заявка отправлена!",
+                      description: "Мы свяжемся с вами в ближайшее время.",
+                    });
+                    setFormData({ name: '', email: '', company: '', message: '' });
+                  }} className="space-y-4">
+                    <Input 
+                      placeholder="Ваше имя"
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      required
+                    />
+                    <Input 
+                      type="email"
+                      placeholder="Email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      required
+                    />
+                    <Input 
+                      placeholder="Компания"
+                      value={formData.company}
+                      onChange={(e) => setFormData({...formData, company: e.target.value})}
+                    />
+                    <Textarea 
+                      placeholder="Расскажите о вашей задаче..."
+                      value={formData.message}
+                      onChange={(e) => setFormData({...formData, message: e.target.value})}
+                      className="min-h-[120px]"
+                      required
+                    />
+                    <Button type="submit" className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90">
+                      Отправить заявку
+                    </Button>
+                    <Button 
+                      type="button"
+                      onClick={() => setChatOpen(true)} 
+                      variant="outline"
+                      className="w-full"
+                    >
+                      <Icon name="MessageSquare" className="mr-2" size={20} />
+                      Или попробуйте AI консультацию
+                    </Button>
+                  </form>
                 </div>
               </div>
             </Card>
